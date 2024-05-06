@@ -26,6 +26,8 @@ class PyTorchNvidiaApex(PythonPackage, CudaPackage):
     depends_on("cuda@9:", when="+cuda")
     depends_on("py-pybind11", type=("build", "link", "run"))
     depends_on("ninja", type="build")
+    # Required for using --config-settings (PEP 517 backend)
+    depends_on("py-pip@23.1:", when="^python@3.11:", type="build")
 
     variant("cuda", default=False, description="Build with CUDA")
     variant("dist_adam", default=False, description="Build with distributed Adam optimizer")
@@ -105,50 +107,50 @@ class PyTorchNvidiaApex(PythonPackage, CudaPackage):
 
     @when("^python@3.11:")
     def config_settings(self, spec, prefix):
-        global_opts = ''
+        build_opts = []
         if spec.satisfies("^py-torch@1.0:"):
-            global_opts += ' --cpp_ext'
+            build_opts.append('--cpp_ext')
             if "+cuda" in spec:
-                global_opts += ' --cuda_ext'
+                build_opts.append('--cuda_ext')
         if "+dist_adam" in spec:
-            global_opts += ' --distributed_adam'
+            build_opts.append('--distributed_adam')
         if "+dist_lamb" in spec:
-            global_opts += ' --distributed_lamb'
+            build_opts.append('--distributed_lamb')
         if "+perm_search" in spec:
-            global_opts += ' --permutation_search'
+            build_opts.append('--permutation_search')
         if "+bnp" in spec:
-            global_opts += ' --bnp'
+            build_opts.append('--bnp')
         if "+xentropy" in spec:
-            global_opts += ' --xentropy'
+            build_opts.append('--xentropy')
         if "+focal_loss" in spec:
-            global_opts += ' --focal_loss'
+            build_opts.append('--focal_loss')
         if "+group_norm" in spec:
-            global_opts += ' --group_norm'
+            build_opts.append('--group_norm')
         if "+index_mul_2d" in spec:
-            global_opts += ' --index_mul_2d'
+            build_opts.append('--index_mul_2d')
         if "+fast_layer_norm" in spec:
-            global_opts += ' --fast_layer_norm'
+            build_opts.append('--fast_layer_norm')
         if "+fmha" in spec:
-            global_opts += ' --fmha'
+            build_opts.append('--fmha')
         if "+fast_multihead_attn" in spec:
-            global_opts += ' --fast_multihead_attn'
+            build_opts.append('--fast_multihead_attn')
         if "+transducer" in spec:
-            global_opts += ' --transducer'
+            build_opts.append('--transducer')
         if "+cudnn_gbn" in spec:
-            global_opts += ' --cudnn_gbn'
+            build_opts.append('--cudnn_gbn')
         if "+peer_memory" in spec:
-            global_opts += ' --peer_memory'
+            build_opts.append('--peer_memory')
         if "+nccl_p2p" in spec:
-            global_opts += ' --nccl_p2p'
+            build_opts.append('--nccl_p2p')
         if "+fast_bottleneck" in spec:
-            global_opts += ' --fast_bottleneck'
+            build_opts.append('--fast_bottleneck')
         if "+fused_conv_bias_relu" in spec:
-            global_opts += ' --fused_conv_bias_relu'
+            build_opts.append('--fused_conv_bias_relu')
         if "+gpu_direct_storage" in spec:
-            global_opts += ' --gpu_direct_storage'
+            build_opts.append('--gpu_direct_storage')
 
         return {
             "builddir": "build",
             "compile-args": f"-j{make_jobs}",
-            "--global-option": global_opts,
+            "--build-option": build_opts,
         }

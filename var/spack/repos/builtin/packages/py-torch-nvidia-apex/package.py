@@ -151,5 +151,5 @@ class PyTorchNvidiaApex(PythonPackage, CudaPackage):
         return {
             "builddir": "build",
             "compile-args": f"-j{make_jobs}",
-            "--global-option": f'"{build_opts}"',
+            "--global-option": f'\"{build_opts}\"',
         }

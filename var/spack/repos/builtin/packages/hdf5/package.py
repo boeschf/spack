@@ -116,6 +116,7 @@ class Hdf5(CMakePackage):
     variant(
         "subfiling", when="@1.14: +mpi", default=False, description="Enable Subfiling VFD support"
     )
+    variant("direct-vfd", default=False, description="Enable O_DIRECT virtual file driver")
     variant("fortran", default=False, description="Enable Fortran support")
     variant("java", when="@1.10:", default=False, description="Enable Java support")
     variant("threadsafe", default=False, description="Enable thread-safe capabilities")
@@ -538,6 +539,7 @@ class Hdf5(CMakePackage):
                 spec.satisfies("@1.8.22+shared+tools"),
             ),
             self.define_from_variant("HDF5_ENABLE_SUBFILING_VFD", "subfiling"),
+            self.define_from_variant("HDF5_ENABLE_DIRECT_VFD", "direct-vfd"),
             self.define_from_variant("HDF5_ENABLE_MAP_API", "map"),
             self.define("HDF5_ENABLE_Z_LIB_SUPPORT", True),
             self.define_from_variant("HDF5_ENABLE_SZIP_SUPPORT", "szip"),
